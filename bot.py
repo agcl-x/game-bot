@@ -77,15 +77,14 @@ async def game(ctx,*, a1:str):
     ws = wb.active
     n=0
     a=[]
-    lst=['loli hentai']
     k=0
     for row in ws.values:
         n+=1
         lst=list(row)
         lst1=lst[1].replace(' ', '').split(',')
-        lst2=list(lst[4])
+        lst2=list(lst[3])
         if ',' in lst2:
-            lst4=lst[4].replace(' ', '').split(',')
+            lst4=lst[3].replace(' ', '').split(',')
             if a1 in lst1 or a1 in row or a1 in lst4:
                 a.append(n)
 
