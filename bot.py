@@ -87,6 +87,8 @@ async def game(ctx,*, a1:str):
             lst4=lst[3].replace(' ', '').split(',')
             #if ',' in lstt:
                 #lst1=lst[1].replace(' ', '').split(',')
+        else:
+            lst4=lst[3]
         if a1 in row or a1 in lst4:# or a1 in lst1  
             a.append(n)
 
