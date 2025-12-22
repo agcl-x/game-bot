@@ -2,8 +2,7 @@ import discord, openpyxl, random
 from discord.ext import commands
 from discord import app_commands
 from pathlib import Path
-from discord.ui import Button, View
-from discord.utils import get
+from discord.ui import View
 import config
 import difflib
 
@@ -57,10 +56,10 @@ class Buttons(discord.ui.Button):
         super().__init__(label=label, style=style)
         self.message_content=page
         self.user_id=user_id
-    # When button is pressed, this callback is triggered
     async def callback(self, interaction: discord.Interaction):
         if interaction.user.id==self.user_id:
             await interaction.response.edit_message(embed=self.message_content)
+
 def embed_writer(dictionary, embed):
     for i in dictionary:
         string=""
@@ -73,6 +72,7 @@ def embed_writer(dictionary, embed):
             string=element
         embed.add_field(name = i.upper(), value = string , inline=False)
     return embed
+
 def check_if_not_undefined(dictionary):
     to_delete={}
     for i in dictionary:
@@ -91,6 +91,7 @@ def check_if_not_undefined(dictionary):
             elif dictionary[i] == "/?":
                 dictionary[i] = "?"
     return dictionary
+
 @client.tree.command(name="game")
 @app_commands.describe(genre="Жанр гри", age_from="Пошук від якогось року", age_to="Пошук до якогось року", name="Назва гри")
 async def game(interaction: discord.Interaction,genre:str=None, age_from:int=None, age_to:int=None,*, name:str=None):
@@ -172,8 +173,6 @@ async def game(interaction: discord.Interaction,genre:str=None, age_from:int=Non
             break
         cn+=1
 
-    
-
 @client.command()
 async def party(ctx,*, a):
     global voices
@@ -183,8 +182,6 @@ async def party(ctx,*, a):
         del list_of_added[0]
     except Exception:
         await ctx.reply('Неправильно введені користувачі')
-    client_server= discord.utils.get(client.guilds, id=config.server_id)
-
     for guild in client.guilds:
         mainc = discord.utils.get(guild.categories, id=config.party_category_id)
     if ctx.author.voice == None:  
@@ -200,8 +197,7 @@ async def party(ctx,*, a):
                 await user.send(f'Привітики батончики. Тебе запросили в войс!\nhttps://discord.com/channels/{config.server_id}/{party_voice.id}')
             await ctx.reply('Запрошення надіслані. Очікуйте!')
         else:
-            await user.send("error)")
-        #sd.append(str(party_voice.id))
+            pass
         voices.append(party_voice.id)
 @client.command()
 async def add(ctx,*, a):# NEED TO BE FINISHED
@@ -226,8 +222,9 @@ async def add(ctx,*, a):# NEED TO BE FINISHED
 async def report(ctx,*,string):
     bot_developer=client.get_user(config.bot_dev_id)
     await bot_developer.send(f"Report from <@{ctx.author.id}:\n\t{string}")
-@client.command
-#@commands.has_any_role(id=config.admin_role_id)
+
+@client.command()
+@commands.has_any_role(config.admin_role_id)
 async def change_status(ctx,a1:str):
     await client.change_presence(status=discord.Status.online, activity=discord.Game(name=a1))           
 
@@ -237,20 +234,17 @@ async def on_voice_state_update(member:discord.Member, before, after):
     guild= discord.utils.get(client.guilds, id=config.server_id)
     for guild in client.guilds:
         mainc = discord.utils.get(guild.categories, id=config.voice_category_id)
-    #before.channel is None and 
     if after.channel:
         channelid1 = after.channel.id
         if channelid1==config.voice_create_voices_id:
             chan = await guild.create_voice_channel(f'{member.name} voice', category=mainc)
             await member.move_to(chan)
             voices_created.append(chan.id)
-    #after.channel is None and 
     if before.channel is not None:
         channelid2 = before.channel.id
         members = before.channel.members
         if members ==[]:
             if channelid2 in voices_created:
-                #await guild.delete_voice_channel(f'{member.name}party', category=mainc)
                 existing_channel = discord.utils.get(guild.channels, id=channelid2) #name=f'{member.name} party')
                 await existing_channel.delete()  
             elif channelid2 in voices:
@@ -264,5 +258,3 @@ async def on_ready():
     await client.tree.sync()
 
 client.run(config.token)
-#channel1 = ctx.author.voice.channel
-    #await channel.connect()
