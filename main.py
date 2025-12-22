@@ -257,4 +257,12 @@ async def on_ready():
     await client.change_presence(status=discord.Status.online, activity=discord.Game(name=config.activity))
     await client.tree.sync()
 
+@client.event
+async def on_guild_join(guild):
+    config.server_id = guild.id
+    for channel in guild.text_channels:
+        if channel.permissions_for(guild.me).send_messages:
+            await channel.send("Привіт! Дякую за запрошення. Я бот для ігор та вечірок! Скористайтеся `/game`, щоб почати.")
+            break
+
 client.run(config.token)
